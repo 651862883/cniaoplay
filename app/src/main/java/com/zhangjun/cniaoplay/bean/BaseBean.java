@@ -1,7 +1,5 @@
 package com.zhangjun.cniaoplay.bean;
 
-import java.io.Serializable;
-
 /**
  * 菜鸟窝http://www.cniao5.com 一个高端的互联网技能学习平台
  *
@@ -12,7 +10,7 @@ import java.io.Serializable;
  * @date
  */
 
-public class BaseBean<T> implements Serializable {
+public class BaseBean<T> extends  BaseEntity {
 
 
     public static final int SUCCESS=1;

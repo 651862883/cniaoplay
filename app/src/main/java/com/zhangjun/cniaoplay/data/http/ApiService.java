@@ -3,6 +3,7 @@ package com.zhangjun.cniaoplay.data.http;
 import com.zhangjun.cniaoplay.bean.AppInfo;
 import com.zhangjun.cniaoplay.bean.BaseBean;
 import com.zhangjun.cniaoplay.bean.IndexBean;
+import com.zhangjun.cniaoplay.bean.LoginBean;
 import com.zhangjun.cniaoplay.bean.PageBean;
 import com.zhangjun.cniaoplay.bean.requestbean.LoginRequestBean;
 
@@ -26,9 +27,9 @@ public interface ApiService {
     @GET("featured2")
     public Observable<BaseBean<PageBean<AppInfo>>> getApps(@Query("p") String jsonParam);
 
-    @POST("login")
+   /* @POST("login")
     public Observable<BaseBean> login(@Body LoginRequestBean bean);
-
+*/
 
     @GET("index")
     public  Observable<BaseBean<IndexBean>> index();
@@ -41,5 +42,7 @@ public interface ApiService {
     @GET("game")
     public  Observable<BaseBean<PageBean<AppInfo>>> games(@Query("page") int page);
 
+    @POST("login")
+    public Observable<BaseBean<LoginBean>> login(@Body LoginRequestBean param);
 
 }

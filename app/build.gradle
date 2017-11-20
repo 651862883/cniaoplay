@@ -75,4 +75,10 @@ dependencies {
     //RecyclerView适配器
     compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.8.0'
 
+    //UI事件绑定
+    compile 'com.jakewharton.rxbinding:rxbinding:1.0.1'
+
+    //事件回调，类似于广播
+    compile 'com.hwangjr.rxbus:rxbus:1.0.5'
+
 }

@@ -7,6 +7,7 @@ import com.zhangjun.cniaoplay.ui.BaseView;
 import rx.Observable;
 
 /**
+ *
  * Created by Administrator on 2017-11-13.
  */
 public interface LoginContract {
@@ -18,7 +19,6 @@ public interface LoginContract {
     public  interface LoginView extends BaseView{
         public void checkPhoneError();
         void  checkPhoneSuccess();
-
         void  loginSuccess(LoginBean bean);
        // void  loginError(String msg); 错误toast弹出，没有业务操作
     }

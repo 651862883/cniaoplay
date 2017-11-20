@@ -1,6 +1,8 @@
 package com.zhangjun.cniaoplay.ui.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.PagerAdapter;
@@ -10,8 +12,21 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.hwangjr.rxbus.RxBus;
+import com.hwangjr.rxbus.annotation.Subscribe;
+import com.mikepenz.iconics.IconicsDrawable;
+import com.mikepenz.ionicons_typeface_library.Ionicons;
 import com.zhangjun.cniaoplay.R;
+import com.zhangjun.cniaoplay.bean.User;
+import com.zhangjun.cniaoplay.common.Constant;
+import com.zhangjun.cniaoplay.common.font.Cniao5Font;
+import com.zhangjun.cniaoplay.common.imageloader.GlideCircleTransform;
+import com.zhangjun.cniaoplay.common.util.ACache;
 import com.zhangjun.cniaoplay.di.component.AppComponent;
 import com.zhangjun.cniaoplay.ui.adapter.ViewPagerAdapter;
 
@@ -34,6 +49,8 @@ public class MainActivity extends BaseActivity {
 
 
     private View headerView;
+    private ImageView mUserHeadView;
+    private TextView mTextUserName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,8 +73,12 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void init() {
+        //注册RxBus广播
+        RxBus.get().register(this);
+
         initDrawerLayout();
         initTabLayout();
+        initUser();
     }
 
     private void initTabLayout() {
@@ -69,25 +90,28 @@ public class MainActivity extends BaseActivity {
 
     private void initDrawerLayout() {
         headerView = mNavigationView.getHeaderView(0);
-        headerView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        mUserHeadView = (ImageView) headerView.findViewById(R.id.img_avatar);
+        mUserHeadView.setImageDrawable(new IconicsDrawable(this, Cniao5Font.Icon.cniao_head).colorRes(R.color.white));
+        mTextUserName = (TextView) headerView.findViewById(R.id.txt_username);
 
-            }
-        });
+        mNavigationView.getMenu().findItem(R.id.menu_app_update).setIcon(new IconicsDrawable(this, Ionicons.Icon.ion_ios_loop));
+        mNavigationView.getMenu().findItem(R.id.menu_download_manager).setIcon(new IconicsDrawable(this, Cniao5Font.Icon.cniao_download));
+        mNavigationView.getMenu().findItem(R.id.menu_app_uninstall).setIcon(new IconicsDrawable(this, Ionicons.Icon.ion_ios_trash_outline));
+        mNavigationView.getMenu().findItem(R.id.menu_setting).setIcon(new IconicsDrawable(this, Ionicons.Icon.ion_ios_gear_outline));
+        mNavigationView.getMenu().findItem(R.id.menu_logout).setIcon(new IconicsDrawable(this, Cniao5Font.Icon.cniao_shutdown));
 
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
-            public boolean onNavigationItemSelected(MenuItem item) {
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
-                    case R.id.menu_app_update:
-                        break;
-                    case R.id.menu_message:
+                    case R.id.menu_logout:
+                        logout();
                         break;
                 }
                 return false;
             }
         });
+
         //toolbar初始话menu
         mToolBar.inflateMenu(R.menu.toolbar_menu);
 
@@ -95,6 +119,66 @@ public class MainActivity extends BaseActivity {
         ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolBar, R.string.open, R.string.close);
         drawerToggle.syncState();
         mDrawerLayout.addDrawerListener(drawerToggle);
+    }
+
+    //退出登录
+    private void logout() {
+        ACache aCache = ACache.get(this);
+        aCache.put(Constant.TOKEN,"");
+        aCache.put(Constant.USER,"");
+
+        mUserHeadView.setImageDrawable(new IconicsDrawable(this, Cniao5Font.Icon.cniao_head).colorRes(R.color.white));
+        mTextUserName.setText("未登录");
+        Toast.makeText(this,"你已经退出登录",Toast.LENGTH_LONG).show();
+
+        //点击头像，登录
+        headerView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //点击事件
+                startActivity(new Intent(MainActivity.this,LoginActivity.class));
+            }
+        });
+
+    }
+
+    //广播的消费者
+    @Subscribe
+    public void getUserBrocast(User user){
+        initUserHeadView(user);
+    }
+
+    private void initUserHeadView(User user){
+        //更新头像
+        //ImageLoader.load(user.getLogo_url(),mUserHeadView);
+        //圆角头像
+        Glide.with(this).load(user.getLogo_url()).transform(new GlideCircleTransform(this)).into(mUserHeadView);
+        mTextUserName.setText(user.getUsername());
+    }
+
+    private void initUser(){
+        Object objectUser = ACache.get(this).getAsObject(Constant.USER);
+        if (objectUser == null){
+            //点击头像，登录
+            headerView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //点击事件
+                    startActivity(new Intent(MainActivity.this,LoginActivity.class));
+                }
+            });
+        }else {
+            User user = (User) objectUser;
+            initUserHeadView(user);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        RxBus.get().unregister(this);
+
     }
 
 }
