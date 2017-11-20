@@ -26,10 +26,13 @@
         android:layout_height="wrap_content"
         android:background="@color/color_w"
         android:orientation="vertical"
+
         >
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:id="@+id/view_mobi_wrapper"
+            >
             <EditText
                 android:id="@+id/txt_mobi"
                 android:layout_width="match_parent"
@@ -42,7 +45,9 @@
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:id="@+id/view_password_wrapper"
+            >
             <EditText
                 android:id="@+id/txt_password"
                 android:layout_width="match_parent"
@@ -54,13 +59,14 @@
 
 
         <Button
-            android:id="@+id/ben_login"
+            android:id="@+id/btn_login"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
             android:textColor="@color/color_w"
-            android:background="@color/colorPrimary"
+            android:background="@drawable/bg_btn"
             android:text="@string/login"
+            android:enabled="false"
             />
 
     </LinearLayout>
